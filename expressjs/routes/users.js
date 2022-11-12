@@ -1,11 +1,11 @@
-var express = require('express')
+var express = require("express");
 var router = express.Router();
-var mysql = require('mysql');
-var userService = require('./../services/userService');
+var mysql = require("mysql");
+var userService = require("./../services/userService");
 var ageService = require("../services/dateService");
 
 /* Login */
-router.get('/login', function(req, res, next) {
+router.post("/login", function (req, res, next) {
   const p = userService.validateLogin(req);
   p.then((user) => {
     user.age = ageService.getAge(user.birthdate);
@@ -17,16 +17,16 @@ router.get('/login', function(req, res, next) {
 });
 
 /* Logout */
-router.get('/logout', function(req, res, next) {
+router.get("/logout", function (req, res, next) {
   if (req.session.user) {
     req.session.destroy();
-    res.redirect('/');
+    res.redirect("/");
   } else {
-    res.status(401).send({error:"UNAUTHORIZED"});
+    res.status(401).send({ error: "UNAUTHORIZED" });
   }
 });
 
-router.post('/', (req, res, next) => {
+router.post("/", (req, res, next) => {
   //TODO: validate all fields available and correct
   console.log("Prompted to create user");
   const p = userService.createUser(req);
@@ -40,7 +40,5 @@ router.post('/', (req, res, next) => {
     // res.status(500).send(err);
   });
 });
-
-
 
 module.exports = router;

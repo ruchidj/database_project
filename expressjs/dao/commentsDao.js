@@ -1,6 +1,6 @@
-const defaultDao = require('../dao/defaultDao');
+const defaultDao = require("../dao/defaultDao");
 
-let getCommentsForArticle = function(articleId) {
+let getCommentsForArticle = function (articleId) {
   const commentsArtPromise = new Promise((resolve, reject) => {
     const connection = defaultDao.getDatabaseConnection();
     let comments = [];
@@ -14,12 +14,13 @@ let getCommentsForArticle = function(articleId) {
       }
 
       if (rows) {
-        rows.forEach(comm => {
+        rows.forEach((comm) => {
           let currentComment = {
-            'id': comm.cid, 
-            'content': comm.ccontent,
-            'commentTime': comm.comment_time, 
-            'username': comm.uname }
+            id: comm.cid,
+            content: comm.ccontent,
+            commentTime: comm.comment_time,
+            username: comm.uname,
+          };
           comments.push(currentComment);
         });
         resolve(comments);
@@ -29,9 +30,8 @@ let getCommentsForArticle = function(articleId) {
     });
   });
   return commentsArtPromise;
-}
+};
 
 module.exports = {
   getCommentsForArticle: getCommentsForArticle,
-
-}
+};

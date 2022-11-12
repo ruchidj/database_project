@@ -1,13 +1,14 @@
-var express = require('express');
-const defaultDao = require('../dao/defaultDao');
-const dateService = require('../services/dateService');
+var express = require("express");
+const defaultDao = require("../dao/defaultDao");
+const dateService = require("../services/dateService");
 
-let getUserArticles = function(user) {
+let getUserArticles = function (user) {
   const userArtPromise = new Promise((resolve, reject) => {
     const connection = defaultDao.getDatabaseConnection();
     let articles = [];
-    let sql = "select aid, title, uname, publish_time, catid, cname from article natural join people natural join category where uid = ?";
-    
+    let sql =
+      "select aid, title, uname, publish_time, catid, cname from article natural join people natural join category where uid = ?";
+
     connection.query(sql, [user.id], (err, rows, fields) => {
       if (err) {
         console.log("Error enouncter when getting Articles!!!!");
@@ -15,15 +16,17 @@ let getUserArticles = function(user) {
       }
 
       if (rows) {
-        rows.forEach(art => {
-          let article = {'id': art.aid, 
-            'title': art.title, 
-            'username': art.uname,
-            'publishTime': art.publish_time,
-            'category': { 'id': art.catid, 'name': art.cname } };
+        rows.forEach((art) => {
+          let article = {
+            id: art.aid,
+            title: art.title,
+            username: art.uname,
+            publishTime: art.publish_time,
+            category: { id: art.catid, name: art.cname },
+          };
           articles.push(article);
         });
-        resolve(articles)
+        resolve(articles);
         console.log("Closing connection...");
         connection.end();
       } else {
@@ -33,12 +36,13 @@ let getUserArticles = function(user) {
     });
   });
   return userArtPromise;
-}
+};
 
-let getArticle = function(articleId, user) {
+let getArticle = function (articleId, user) {
   const articlePromise = new Promise((resolve, reject) => {
     const connection = defaultDao.getDatabaseConnection();
-    let sql = "select * from article natural join people natural join category where article.aid = ?";
+    let sql =
+      "select * from article natural join people natural join category where article.aid = ?";
     let article = {};
     connection.query(sql, [articleId], (err, rows, fields) => {
       if (err) {
@@ -47,12 +51,16 @@ let getArticle = function(articleId, user) {
       }
 
       if (rows) {
-        rows.forEach(art => {
-          article = {'id': art.aid, 'title': art.title, 
-            'username': art.uname,  
-            'content': art.acontent, 'category': art.cname,
-            'publishTime': art.publish_time,
-            'minimumAge': art.min_age };
+        rows.forEach((art) => {
+          article = {
+            id: art.aid,
+            title: art.title,
+            username: art.uname,
+            content: art.acontent,
+            category: art.cname,
+            publishTime: art.publish_time,
+            minimumAge: art.min_age,
+          };
         });
         resolve(article);
         console.log("Closing connection...");
@@ -64,13 +72,21 @@ let getArticle = function(articleId, user) {
     });
   });
   return articlePromise;
-}
+};
 
-let createArticle = function(req, user) {
+let createArticle = function (req, user) {
   return new Promise((resolve, reject) => {
     const connection = defaultDao.getDatabaseConnection();
     let sql = "INSERT INTO article values (NULL, ?, ?, ?, ?, ?)";
-    connection.query(sql, [req.body.title, user.id, req.body.content, req.body.publishTime, req.body.categoryId], 
+    connection.query(
+      sql,
+      [
+        req.body.title,
+        user.id,
+        req.body.content,
+        req.body.publishTime,
+        req.body.categoryId,
+      ],
       (err, result) => {
         if (err) {
           console.log("Error enouncter when creating Article!!!!");
@@ -84,15 +100,23 @@ let createArticle = function(req, user) {
 
         console.log("Closing connection...");
         connection.end();
-    });
+      }
+    );
   });
-}
+};
 
-let createComment = function(req, user) {
+let createComment = function (req, user) {
   return new Promise((resolve, reject) => {
     const connection = defaultDao.getDatabaseConnection();
     let sql = "INSERT into comment values (NULL, ?, ?, ?, ?)";
-    connection.query(sql, [user.id, req.body.articleId, req.body.content, dateService.getCurrentDatetime()],
+    connection.query(
+      sql,
+      [
+        user.id,
+        req.body.articleId,
+        req.body.content,
+        dateService.getCurrentDatetime(),
+      ],
       (err, result) => {
         if (err) {
           console.log("Error enouncter when creating Comment!!!!");
@@ -105,15 +129,17 @@ let createComment = function(req, user) {
         }
         console.log("Closing connection...");
         connection.end();
-      });
+      }
+    );
   });
-}
+};
 
-let getArticlesByCategory = function(categoryId, user) {
+let getArticlesByCategory = function (categoryId, user) {
   return new Promise((resolve, reject) => {
     const connection = defaultDao.getDatabaseConnection();
     let articles = [];
-    let sql = "SELECT * FROM article natural join people natural join category where catid = ? and uid <> ?";
+    let sql =
+      "SELECT * FROM article natural join people natural join category where catid = ? and uid <> ?";
     connection.query(sql, [categoryId, user.id], (err, rows) => {
       if (err) {
         console.log("Error enouncter when creating Comment!!!!");
@@ -121,15 +147,17 @@ let getArticlesByCategory = function(categoryId, user) {
       }
 
       if (rows) {
-        rows.forEach(art => {
-          let article = {'id': art.aid, 
-            'title': art.title, 
-            'username': art.uname,
-            'publishTime': art.publish_time,
-            'category': { 'id': art.catid, 'name': art.cname } };
+        rows.forEach((art) => {
+          let article = {
+            id: art.aid,
+            title: art.title,
+            username: art.uname,
+            publishTime: art.publish_time,
+            category: { id: art.catid, name: art.cname },
+          };
           articles.push(article);
         });
-        resolve(articles)
+        resolve(articles);
         console.log("Closing connection...");
         connection.end();
       } else {
@@ -138,12 +166,12 @@ let getArticlesByCategory = function(categoryId, user) {
       }
     });
   });
-}
+};
 
 module.exports = {
   getUserArticles: getUserArticles,
   getArticle: getArticle,
   createArticle: createArticle,
   createComment: createComment,
-  getArticlesByCategory: getArticlesByCategory
-}
+  getArticlesByCategory: getArticlesByCategory,
+};
