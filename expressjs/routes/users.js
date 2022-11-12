@@ -17,7 +17,7 @@ router.post("/login", function (req, res, next) {
 });
 
 /* Logout */
-router.get("/logout", function (req, res, next) {
+router.post("/logout", function (req, res, next) {
   if (req.session.user) {
     req.session.destroy();
     res.redirect("/");
@@ -26,7 +26,7 @@ router.get("/logout", function (req, res, next) {
   }
 });
 
-router.post("/", (req, res, next) => {
+router.post("/createUser", (req, res, next) => {
   //TODO: validate all fields available and correct
   console.log("Prompted to create user");
   const p = userService.createUser(req);
